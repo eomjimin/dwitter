@@ -50,11 +50,11 @@ export async function create(text, name, username) {
 }
 
 export async function update(id, text){
-    const tweet = tweets.find((text) => tweet.id === id);
-    if (tweet){
-        tweet.text = text;
+    const tweet = tweets.find((tweet) => tweet.id === id)
+    if(tweet){
+        tweet.text = text
     }
-    return tweet;
+    return tweet
 }
 
 export async function remove(id){

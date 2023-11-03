@@ -1,6 +1,7 @@
 import { response } from "express";
 import * as tweetRepository from "../data/tweet.js";
 
+
 // getTweets
 export async function getTweets(req, res){
     const username = req.query.username;
@@ -31,7 +32,7 @@ export async function createTweet(req, res, next){
 
 // updateTweet
 export async function updateTweet(req, res, next){
-    const id = req.query.id;
+    const id = req.params.id;
     const text = req.body.text;
     const tweet = await tweetRepository.update(id, text);
     if (tweet){
