@@ -1,24 +1,20 @@
+import * as userRepository from "./auth.js";
+
 let tweets = [
     {
         id: "1",
         text: "안녕하세요!",
         createdAt: Date.now().toString(),
+        userId: "1",
         name: "김사과",
         username: "apple",
         url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrYEhHx-OXQF1NqVRXPL8R50ggKje3hQTvIA&usqp=CAU"
     },
     {
         id: "2",
-        text: "반갑습니다!",
-        createdAt: Date.now().toString(),
-        name: "이메론",
-        username: "melon",
-        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrYEhHx-OXQF1NqVRXPL8R50ggKje3hQTvIA&usqp=CAU"
-    },
-    {
-        id: "3",
         text: "잘부탁드립니다!",
         createdAt: Date.now().toString(),
+        userId: "2",
         name: "반하나",
         username: "banana",
         url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrYEhHx-OXQF1NqVRXPL8R50ggKje3hQTvIA&usqp=CAU"
@@ -26,37 +22,52 @@ let tweets = [
 ];
 
 export async function getAll(){
-    return tweets;
+    return Promise.all(
+        tweets.map(async (tweet) => {
+            const {username, name, url} = await userRepository.findById(tweet.userId);
+            return { ...tweet, username, name, url};
+        })
+    );
+    
 }
 
 export async function getAllByUsername(username){
-    return tweets.filter((tweet) => tweet.username ===  username );
+    return getAll().then((tweets) => 
+        tweets.filter((tweet) => tweet.username === username));
 }
 
 export async function getById(id){
-    return tweets.find((tweet) => tweet.id === id);
+    const found = tweets.find((tweet) => tweet.id === id);
+    if (!found) {
+        return null;
+    }
+    const { username, name, url } = await userRepository.findById(found.userId);
+    return {...found, username, name, url};
 }
 
-export async function create(text, name, username) {
+export async function create(text, userId) {
     const tweet = {
         id: "10",
         text,                                       
         createdAt: Date.now().toString(),
-        name,
-        username
+        userId
     };
     tweets = [tweet, ...tweets];  
-    return tweets;
+    return getById(tweet.id);
 }
 
-export async function update(id, text){
-    const tweet = tweets.find((tweet) => tweet.id === id)
+export async function update(id,text){
+    const tweet = tweets.find((tweet)=>tweet.id === id)
     if(tweet){
         tweet.text = text
     }
-    return tweet
+    return getById(tweet.id)
 }
 
 export async function remove(id){
     tweets = tweets.filter((tweet) => tweet.id !== id);
+}
+
+export async function signup(){
+    
 }

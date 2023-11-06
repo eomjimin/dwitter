@@ -1,6 +1,6 @@
 import { response } from "express";
 import * as tweetRepository from "../data/tweet.js";
-
+import { isAuth } from "../middleware/auth.js";
 
 // getTweets
 export async function getTweets(req, res){
@@ -25,8 +25,8 @@ export async function getTweet(req, res, next){
 
 // createTweet
 export async function createTweet(req, res, next){
-    const { text, name, username } = req.body;
-    const tweet = await tweetRepository.create(text, name, username);
+    const { text } = req.body;
+    const tweet = await tweetRepository.create(text, req.userId);
     res.status(201).json(tweet);
 }
 
@@ -34,18 +34,30 @@ export async function createTweet(req, res, next){
 export async function updateTweet(req, res, next){
     const id = req.params.id;
     const text = req.body.text;
-    const tweet = await tweetRepository.update(id, text);
-    if (tweet){
-        res.status(200).json(tweet);
-    }
-    else{
+    const tweet = await tweetRepository.getById(id);
+
+    if (!tweet){
         res.status(404).json({message: `Tweet id(${id}) not found`});
     }
+    if (tweet.userId !== req.userId){
+        return res.sendStatus(403);
+    }
+    const updated = await tweetRepository.update(id, text);    
+    res.status(200).json(updated);
+
 }
 
 //delteTweet
 export async function delteTweet(req, res){
-    const id = req.query.id;
+    const id = req.params.id;
+    const tweet = await tweetRepository.getById(id);
+
+    if (!tweet){
+        res.status(404).json({message: `Tweet id(${id}) not found`});
+    }
+    if (tweet.userId !== req.userId){
+        return res.sendStatus(403);
+    }
     await tweetRepository.remove(id);
     res.sendStatus(204);
-}
+} 
