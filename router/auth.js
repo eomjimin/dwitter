@@ -43,6 +43,7 @@ const validateSignup = [
 // SIGNUP /auth/signup
 router.post("/signup", validateSignup, authController.signup );
 
+
 // LOGIN /auth/login
 router.post("/login", validateCredential,authController.login );
 
