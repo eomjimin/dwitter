@@ -34,5 +34,5 @@ router.delete("/:id", isAuth, tweetController.delteTweet);
 
 
 
-
+0
 export default router; 

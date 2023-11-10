@@ -6,6 +6,7 @@ import authRouter from "./router/auth.js";
 // import dotenv from 'dotenv';
 import {config} from './config.js';
 // dotenv.config();
+import { initSocket } from "./connection/socket.js";
 
 console.log(process.env.JWT_SECRET);
 const app = express();
@@ -22,4 +23,5 @@ app.use((req, res, next) => {
     res.sendStatus(404);
 });
 
-app.listen(config.host.port);
+const server = app.listen(config.host.port);
+initSocket(server);
